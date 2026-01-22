@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jiro Voice Optimizer v5.1</title>
+    <title>Jiro Voice Optimizer v6.0 - Monetized</title>
 
     <meta property="og:title" content="Jiro Global Speaker - 二郎コール生成器">
     <meta property="og:description" content="外国人でも二郎でコールを成功させるための、発音特化型デバッグツール。">
@@ -12,8 +12,8 @@
 
     <style>
         :root { --jiro-yellow: #fff100; --bg: #000; --accent: #ff0000; }
-        body { font-family: 'Arial Black', sans-serif; background: var(--bg); color: #fff; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .app { width: 100%; max-width: 400px; border: 4px solid var(--jiro-yellow); background: #111; padding: 15px; box-sizing: border-box; }
+        body { font-family: 'Arial Black', 'Helvetica Neue', sans-serif; background: var(--bg); color: #fff; margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .app { width: 100%; max-width: 400px; border: 4px solid var(--jiro-yellow); background: #111; padding: 15px; box-sizing: border-box; position: relative; }
         
         .lang-nav { display: flex; gap: 4px; margin-bottom: 15px; }
         .lang-nav button { flex: 1; padding: 12px; background: #333; color: #fff; border: 1px solid #555; cursor: pointer; font-size: 14px; font-weight: bold; }
@@ -27,13 +27,19 @@
 
         #exec { width: 100%; padding: 20px; background: var(--jiro-yellow); border: none; font-weight: 900; font-size: 1.3rem; margin: 15px 0; cursor: pointer; }
         
+        /* アウトプットエリア */
         .output { background: #000; border: 3px solid var(--accent); padding: 25px 10px; text-align: center; position: relative; }
-        .output::before { content: "OUTSIDE INTERFACE"; position: absolute; top: -10px; left: 10px; background: var(--accent); color: #fff; font-size: 0.6rem; padding: 2px 5px; }
+        .output::before { content: "VOICE OUTPUT"; position: absolute; top: -10px; left: 10px; background: var(--accent); color: #fff; font-size: 0.6rem; padding: 2px 5px; }
         
         .main-call { font-size: 2.8rem; font-weight: 900; color: var(--jiro-yellow); line-height: 1.1; margin-bottom: 10px; }
         .reading-call { font-size: 1.5rem; color: #fff; letter-spacing: 1px; border-top: 1px solid #333; padding-top: 10px; }
-        
         .meaning { font-size: 0.8rem; color: #666; margin-top: 15px; font-style: italic; }
+
+        /* 投げ銭セクション */
+        .donation-area { margin-top: 30px; text-align: center; border-top: 1px dashed #444; padding-top: 20px; }
+        .donation-text { font-size: 0.7rem; color: #888; margin-bottom: 12px; }
+        .donate-btn { display: inline-flex; align-items: center; background-color: #FFDD00; color: #000; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.9rem; transition: transform 0.2s; }
+        .donate-btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
@@ -90,14 +96,21 @@
         <div id="out2" class="reading-call">-</div>
         <div id="out-m" class="meaning">Selected: None</div>
     </div>
+
+    <div class="donation-area">
+        <div id="don-t" class="donation-text">If this tool helped you, support the creator!</div>
+        <a href="https://www.buymeacoffee.com/あなたのID" target="_blank" class="donate-btn">
+            🍜 <span id="don-b">Buy me a Ramen</span>
+        </a>
+    </div>
 </div>
 
 <script>
 let cur = 'ja';
 const d = {
-    ja: { inst: "店員に「ニンニク入れますか？」と聞かれたら、下の黄色い文字を叫んでください。", b: "コールを生成", g: "ニンニク", v: "ヤサイ", f: "アブラ", s: "カラメ" },
-    en: { inst: "When the staff asks 'Ninniku iremasuka?', SHOUT the yellow text below!", b: "GENERATE COMMAND", g: "Garlic", v: "Vegetable", f: "Pork Fat", s: "Salty" },
-    zh: { inst: "当主人问 “Ninniku iremasuka?” 时、请大声朗读下方的黄色文字！", b: "生成指令", g: "大蒜", v: "蔬菜", f: "猪油", s: "咸度" }
+    ja: { inst: "店員に「ニンニク入れますか？」と聞かれたら、下の黄色い文字を叫んでください。", b: "コールを生成", g: "ニンニク", v: "ヤサイ", f: "アブラ", s: "カラメ", dt: "ツールがお役に立ったら、開発者を応援してください！", db: "ラーメンを奢る" },
+    en: { inst: "When the staff asks 'Ninniku iremasuka?', SHOUT the yellow text below!", b: "GENERATE COMMAND", g: "Garlic", v: "Vegetable", f: "Pork Fat", s: "Salty", dt: "If this tool helped you, support the creator!", db: "Buy me a Ramen" },
+    zh: { inst: "当主人问 “Ninniku iremasuka?” 时、请大声朗读下方的黄色文字！", b: "生成指令", g: "大蒜", v: "蔬菜", f: "猪油", s: "咸度", dt: "如果这个工具对你有帮助、请支持作者！", db: "請作者吃拉面" }
 };
 
 function setL(l, b) {
@@ -110,6 +123,8 @@ function setL(l, b) {
     document.getElementById('lv').innerText = d[l].v;
     document.getElementById('lf').innerText = d[l].f;
     document.getElementById('ls').innerText = d[l].s;
+    document.getElementById('don-t').innerText = d[l].dt;
+    document.getElementById('don-b').innerText = d[l].db;
 }
 
 function gen() {
@@ -118,7 +133,6 @@ function gen() {
     const fE = document.getElementById('f');
     const sE = document.getElementById('s');
     
-    // 全マシ判定（カラメも含める）
     const isMashi = (gE.value==="ニンニク" && vE.value==="ヤサイ" && fE.value==="アブラ" && sE.value==="カラメ");
     
     let res = "";
