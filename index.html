@@ -1,45 +1,47 @@
 function generate() {
-    const g = document.getElementById('garlic').value;
-    const v = document.getElementById('vegetable').value;
-    const f = document.getElementById('fat').value;
-    const s = document.getElementById('salty').value;
+    const lang = document.querySelector('.lang-btn.active').innerText; // 現在の選択言語を取得
+    const g = document.getElementById('garlic');
+    const v = document.getElementById('vegetable');
+    const f = document.getElementById('fat');
+    const s = document.getElementById('salty');
     
-    const isZenMashi = (g === "ニンニク" && v === "ヤサイ" && f === "アブラ" && s === "カラメ");
-    const isZenMashimashi = (g === "ニンニクマシマシ" && v === "ヤサイマシマシ" && f === "アブラマシマシ" && s === "カラメ");
+    // 選択された言語に応じたデータ属性から値を取得
+    const getVal = (el) => {
+        const opt = el.options[el.selectedIndex];
+        if (lang === 'EN') return opt.getAttribute('data-en') || opt.value;
+        if (lang === 'ZH') return opt.getAttribute('data-zh') || opt.value;
+        return opt.value;
+    };
 
+    const gVal = getVal(g);
+    const vVal = getVal(v);
+    const fVal = getVal(f);
+    const sVal = (lang === 'JA') ? s.value : (s.value.trim() ? "Salty" : ""); // カラメの多言語対応
+
+    // 全マシ判定
+    const isAll = (g.value.includes("ニンニク") && v.value.includes("ヤサイ") && f.value.includes("アブラ") && s.value.includes("カラメ"));
+    
     let res = "";
-    let reading = ""; // 発音ガイド用
+    let sub = ""; // 日本語の読み/補足用
 
-    if (isZenMashimashi) {
-        res = "全マシマシ";
-        reading = "ZEN-MASHI-MASHI";
-    } else if (isZenMashi) {
-        res = "全マシ";
-        reading = "ZEN-MASHI";
+    if (isAll) {
+        if (lang === 'EN') { res = "ZEN-MASHI"; sub = "All Toppings"; }
+        else if (lang === 'ZH') { res = "全加 (Quán jiā)"; sub = "全部トッピング"; }
+        else { res = "全マシ"; sub = "ZEN-MASHI"; }
     } else {
-        res = [g, v, f, s].filter(x => x.trim() !== "").join("");
-        // 読みの生成（簡易変換）
-        reading = res
-            .replace(/ニンニク/g, "NINNIKU ")
-            .replace(/ヤサイ/g, "YASAI ")
-            .replace(/アブラ/g, "ABURA ")
-            .replace(/カラメ/g, "KARAME ")
-            .replace(/マシマシ/g, "MASHI-MASHI ")
-            .replace(/マシ/g, "MASHI ")
-            .replace(/少なめ/g, "SUKUNAME ")
-            .replace(/抜き/g, "NUKI ");
+        res = [gVal, vVal, fVal, sVal].filter(x => x && x.trim() !== "").join(" ");
     }
 
-    if (res === "" || res === "なし") {
-        res = "そのままで";
-        reading = "SONO-MAMA-DE";
+    if (!res || res.includes("なし") || res.includes("None")) {
+        res = (lang === 'EN') ? "SONO-MAMA" : (lang === 'ZH' ? "就这样 (Jiù zhèyàng)" : "そのままで");
+        sub = "Default / No extra";
     }
-    
+
     // 表示の更新
     document.getElementById('call-output').innerHTML = 
         `<div style="font-size: 0.8rem; color: #888;">Voice Call:</div>` +
-        `<div>${res}！</div>` +
-        `<div style="font-size: 1rem; color: var(--jiro-yellow); margin-top:5px;">[ ${reading.trim()} ]</div>`;
+        `<div style="color: var(--jiro-yellow);">${res}！</div>` +
+        `<div style="font-size: 0.9rem; color: #ccc; margin-top:5px;">${sub}</div>`;
     
-    document.getElementById('sys-msg').innerText = "> STATUS: 200 OK (Phonetic Output Ready)";
+    document.getElementById('sys-msg').innerText = `> STATUS: 200 OK (${lang} Mode)`;
 }
