@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jiro Voice Optimizer v5.0</title>
+    <title>Jiro Voice Optimizer v5.1</title>
 
     <meta property="og:title" content="Jiro Global Speaker - 二郎コール生成器">
     <meta property="og:description" content="外国人でも二郎でコールを成功させるための、発音特化型デバッグツール。">
@@ -15,7 +15,6 @@
         body { font-family: 'Arial Black', sans-serif; background: var(--bg); color: #fff; margin: 0; padding: 10px; display: flex; justify-content: center; }
         .app { width: 100%; max-width: 400px; border: 4px solid var(--jiro-yellow); background: #111; padding: 15px; box-sizing: border-box; }
         
-        /* 言語切替 */
         .lang-nav { display: flex; gap: 4px; margin-bottom: 15px; }
         .lang-nav button { flex: 1; padding: 12px; background: #333; color: #fff; border: 1px solid #555; cursor: pointer; font-size: 14px; font-weight: bold; }
         .lang-nav button.active { background: var(--jiro-yellow); color: #000; border-color: var(--jiro-yellow); }
@@ -28,7 +27,6 @@
 
         #exec { width: 100%; padding: 20px; background: var(--jiro-yellow); border: none; font-weight: 900; font-size: 1.3rem; margin: 15px 0; cursor: pointer; }
         
-        /* 出力エリア：ここが肝 */
         .output { background: #000; border: 3px solid var(--accent); padding: 25px 10px; text-align: center; position: relative; }
         .output::before { content: "OUTSIDE INTERFACE"; position: absolute; top: -10px; left: 10px; background: var(--accent); color: #fff; font-size: 0.6rem; padding: 2px 5px; }
         
@@ -77,6 +75,14 @@
         </select>
     </div>
 
+    <div class="row">
+        <label id="ls">カラメ / Salty</label>
+        <select id="s">
+            <option value=" " data-y=" " data-m="Normal">普通 / Normal</option>
+            <option value="カラメ" data-y="KARAME" data-m="More Salty">あり / Salty</option>
+        </select>
+    </div>
+
     <button id="exec" onclick="gen()">GENERATE CALL</button>
 
     <div class="output">
@@ -89,9 +95,9 @@
 <script>
 let cur = 'ja';
 const d = {
-    ja: { inst: "店員に「ニンニク入れますか？」と聞かれたら、下の黄色い文字を叫んでください。", b: "コールを生成", g: "ニンニク", v: "ヤサイ", f: "アブラ" },
-    en: { inst: "When the staff asks 'Ninniku iremasuka?', SHOUT the yellow text below!", b: "GENERATE COMMAND", g: "Garlic", v: "Vegetable", f: "Pork Fat" },
-    zh: { inst: "当主人问 “Ninniku iremasuka?” 时、请大声朗读下方的黄色文字！", b: "生成指令", g: "大蒜", v: "蔬菜", f: "猪油" }
+    ja: { inst: "店員に「ニンニク入れますか？」と聞かれたら、下の黄色い文字を叫んでください。", b: "コールを生成", g: "ニンニク", v: "ヤサイ", f: "アブラ", s: "カラメ" },
+    en: { inst: "When the staff asks 'Ninniku iremasuka?', SHOUT the yellow text below!", b: "GENERATE COMMAND", g: "Garlic", v: "Vegetable", f: "Pork Fat", s: "Salty" },
+    zh: { inst: "当主人问 “Ninniku iremasuka?” 时、请大声朗读下方的黄色文字！", b: "生成指令", g: "大蒜", v: "蔬菜", f: "猪油", s: "咸度" }
 };
 
 function setL(l, b) {
@@ -103,14 +109,17 @@ function setL(l, b) {
     document.getElementById('lg').innerText = d[l].g;
     document.getElementById('lv').innerText = d[l].v;
     document.getElementById('lf').innerText = d[l].f;
+    document.getElementById('ls').innerText = d[l].s;
 }
 
 function gen() {
     const gE = document.getElementById('g');
     const vE = document.getElementById('v');
     const fE = document.getElementById('f');
+    const sE = document.getElementById('s');
     
-    const isMashi = (gE.value==="ニンニク" && vE.value==="ヤサイ" && fE.value==="アブラ");
+    // 全マシ判定（カラメも含める）
+    const isMashi = (gE.value==="ニンニク" && vE.value==="ヤサイ" && fE.value==="アブラ" && sE.value==="カラメ");
     
     let res = "";
     let yomi = "";
@@ -121,13 +130,15 @@ function gen() {
         yomi = "ZEN-MASHI!";
         mean = (cur==='zh') ? "全部添加" : "All Toppings";
     } else {
-        res = [gE.value, vE.value, fE.value].filter(x=>x.trim()).join(" ") + "！";
+        res = [gE.value, vE.value, fE.value, sE.value].filter(x=>x.trim()).join(" ") + "！";
         yomi = [gE.options[gE.selectedIndex].getAttribute('data-y'), 
                 vE.options[vE.selectedIndex].getAttribute('data-y'), 
-                fE.options[fE.selectedIndex].getAttribute('data-y')].filter(x=>x.trim()).join(" ");
+                fE.options[fE.selectedIndex].getAttribute('data-y'),
+                sE.options[sE.selectedIndex].getAttribute('data-y')].filter(x=>x.trim()).join(" ");
         mean = [gE.options[gE.selectedIndex].getAttribute('data-m'), 
                 vE.options[vE.selectedIndex].getAttribute('data-m'), 
-                fE.options[fE.selectedIndex].getAttribute('data-m')].filter(x=>x!=="Normal" && x!=="None").join(", ");
+                fE.options[fE.selectedIndex].getAttribute('data-m'),
+                sE.options[sE.selectedIndex].getAttribute('data-m')].filter(x=>x!=="Normal" && x!=="None").join(", ");
     }
 
     if (!res || res === "！") {
