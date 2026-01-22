@@ -1,198 +1,45 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jiro Global Optimizer v2.0</title>
-    <style>
-        :root {
-            --jiro-yellow: #fff100;
-            --bg-dark: #1a1a1a;
-            --accent-blue: #00e5ff;
-        }
-        body {
-            font-family: 'Segoe UI', Meiryo, sans-serif;
-            background-color: #000;
-            color: #fff;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            padding-top: 20px;
-        }
-        .app-container {
-            width: 360px;
-            border: 2px solid var(--jiro-yellow);
-            background: var(--bg-dark);
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(255, 241, 0, 0.2);
-        }
-        .lang-switcher {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 10px;
-        }
-        .lang-btn {
-            flex: 1;
-            padding: 5px;
-            font-size: 10px;
-            background: #333;
-            color: #ccc;
-            border: 1px solid #555;
-            cursor: pointer;
-        }
-        .lang-btn.active {
-            background: var(--jiro-yellow);
-            color: #000;
-            font-weight: bold;
-        }
-        h1 { font-size: 1rem; color: var(--jiro-yellow); text-align: center; margin: 0 0 15px; }
-        .input-row { margin-bottom: 12px; }
-        label { display: block; font-size: 0.75rem; color: var(--jiro-yellow); margin-bottom: 4px; }
-        .sub-label { font-size: 0.6rem; color: #888; margin-bottom: 4px; }
-        select {
-            width: 100%;
-            padding: 10px;
-            background: #000;
-            color: #fff;
-            border: 1px solid var(--jiro-yellow);
-            border-radius: 0;
-            cursor: pointer;
-        }
-        .display-panel {
-            margin-top: 20px;
-            background: #000;
-            border: 1px solid var(--accent-blue);
-            padding: 15px;
-            text-align: center;
-        }
-        #call-output { font-size: 1.4rem; font-weight: bold; color: var(--accent-blue); min-height: 1.6rem; }
-        .system-msg { font-size: 0.65rem; color: #666; margin-top: 10px; font-family: monospace; }
-        button#exec-btn {
-            width: 100%;
-            padding: 15px;
-            margin-top: 15px;
-            background: var(--jiro-yellow);
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        button#exec-btn:hover { opacity: 0.8; }
-    </style>
-</head>
-<body>
-
-<div class="app-container">
-    <div class="lang-switcher">
-        <button class="lang-btn active" onclick="setLang('ja', this)">JP</button>
-        <button class="lang-btn" onclick="setLang('en', this)">EN</button>
-        <button class="lang-btn" onclick="setLang('zh', this)">ZH</button>
-    </div>
-
-    <h1 id="ui-title">JIRO CALL OPTIMIZER</h1>
-
-    <div class="input-row">
-        <label id="lbl-g">ニンニク / Garlic</label>
-        <div id="sub-g" class="sub-label">Choose garlic amount</div>
-        <select id="garlic">
-            <option value="なし">なし / None</option>
-            <option value="ニンニク">あり / Add</option>
-            <option value="ニンニクマシマシ">マシマシ / Extra</option>
-        </select>
-    </div>
-
-    <div class="input-row">
-        <label id="lbl-v">ヤサイ / Vegetable</label>
-        <div id="sub-v" class="sub-label">Cabbage & Bean sprouts</div>
-        <select id="vegetable">
-            <option value=" ">普通 / Normal</option>
-            <option value="ヤサイ">増し / Extra</option>
-            <option value="ヤサイマシマシ">マシマシ / Double Extra</option>
-            <option value="ヤサイ少なめ">少なめ / Less</option>
-        </select>
-    </div>
-
-    <div class="input-row">
-        <label id="lbl-f">アブラ / Pork Fat</label>
-        <div id="sub-f" class="sub-label">Back fat chunks</div>
-        <select id="fat">
-            <option value=" ">普通 / Normal</option>
-            <option value="アブラ">増し / Extra</option>
-            <option value="アブラマシマシ">マシマシ / Double Extra</option>
-            <option value="アブラ抜き">抜き / None</option>
-        </select>
-    </div>
-
-    <div class="input-row">
-        <label id="lbl-s">カラメ / Salty</label>
-        <div id="sub-s" class="sub-label">Concentration of soup</div>
-        <select id="salty">
-            <option value=" ">普通 / Normal</option>
-            <option value="カラメ">濃いめ / Salty</option>
-        </select>
-    </div>
-
-    <button id="exec-btn" onclick="generate()">GENERATE COMMAND</button>
-
-    <div class="display-panel">
-        <div id="call-output">Waiting for Request...</div>
-        <div class="system-msg" id="sys-msg">> SYSTEM: Ready to transmission.</div>
-    </div>
-</div>
-
-<script>
-const langData = {
-    ja: { title: "二郎コール最適化ツール", btn: "コマンド生成", g: "ニンニク", v: "ヤサイ", f: "アブラ", s: "カラメ", sg: "ニンニクの量を選択", sv: "もやし・キャベツの量", sf: "背脂の塊", ss: "醤油ダレ（味の濃さ）" },
-    en: { title: "JIRO CALL OPTIMIZER", btn: "GENERATE COMMAND", g: "Garlic", v: "Vegetables", f: "Pork Fat", s: "Salty", sg: "Choose garlic amount", sv: "Cabbage & Bean sprouts", sf: "Back fat chunks", ss: "Extra soy sauce" },
-    zh: { title: "二郎拉面点餐系统", btn: "生成指令", g: "大蒜", v: "蔬菜", f: "猪油", s: "咸度", sg: "选择大蒜的分量", sv: "卷心菜和豆芽", sf: "猪背脂", ss: "汤的咸度" }
-};
-
-function setLang(lang, btn) {
-    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    
-    document.getElementById('ui-title').innerText = langData[lang].title;
-    document.getElementById('exec-btn').innerText = langData[lang].btn;
-    document.getElementById('lbl-g').innerText = langData[lang].g;
-    document.getElementById('lbl-v').innerText = langData[lang].v;
-    document.getElementById('lbl-f').innerText = langData[lang].f;
-    document.getElementById('lbl-s').innerText = langData[lang].s;
-    document.getElementById('sub-g').innerText = langData[lang].sg;
-    document.getElementById('sub-v').innerText = langData[lang].sv;
-    document.getElementById('sub-f').innerText = langData[lang].sf;
-    document.getElementById('sub-s').innerText = langData[lang].ss;
-}
-
 function generate() {
     const g = document.getElementById('garlic').value;
     const v = document.getElementById('vegetable').value;
     const f = document.getElementById('fat').value;
     const s = document.getElementById('salty').value;
     
-    // 全マシ/全マシマシ判定
     const isZenMashi = (g === "ニンニク" && v === "ヤサイ" && f === "アブラ" && s === "カラメ");
     const isZenMashimashi = (g === "ニンニクマシマシ" && v === "ヤサイマシマシ" && f === "アブラマシマシ" && s === "カラメ");
 
     let res = "";
+    let reading = ""; // 発音ガイド用
 
     if (isZenMashimashi) {
         res = "全マシマシ";
+        reading = "ZEN-MASHI-MASHI";
     } else if (isZenMashi) {
         res = "全マシ";
+        reading = "ZEN-MASHI";
     } else {
-        // 個別パラメータ結合
         res = [g, v, f, s].filter(x => x.trim() !== "").join("");
+        // 読みの生成（簡易変換）
+        reading = res
+            .replace(/ニンニク/g, "NINNIKU ")
+            .replace(/ヤサイ/g, "YASAI ")
+            .replace(/アブラ/g, "ABURA ")
+            .replace(/カラメ/g, "KARAME ")
+            .replace(/マシマシ/g, "MASHI-MASHI ")
+            .replace(/マシ/g, "MASHI ")
+            .replace(/少なめ/g, "SUKUNAME ")
+            .replace(/抜き/g, "NUKI ");
     }
 
-    // デフォルト（なし、または全て普通の場合）
     if (res === "" || res === "なし") {
         res = "そのままで";
+        reading = "SONO-MAMA-DE";
     }
     
-    document.getElementById('call-output').innerText = res + "！";
-    document.getElementById('sys-msg').innerText = "> STATUS: 200 OK (Call Generated)";
+    // 表示の更新
+    document.getElementById('call-output').innerHTML = 
+        `<div style="font-size: 0.8rem; color: #888;">Voice Call:</div>` +
+        `<div>${res}！</div>` +
+        `<div style="font-size: 1rem; color: var(--jiro-yellow); margin-top:5px;">[ ${reading.trim()} ]</div>`;
+    
+    document.getElementById('sys-msg').innerText = "> STATUS: 200 OK (Phonetic Output Ready)";
 }
-</script>
-</body>
-</html>
