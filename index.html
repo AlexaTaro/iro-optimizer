@@ -1,11 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jiro Global Optimizer v3.0</title>
+    <style>
+        :root {
+            --jiro-yellow: #fff100;
+            --bg-dark: #1a1a1a;
+            --accent-blue: #00e5ff;
+        }
+        body {
+            font-family: 'Segoe UI', Meiryo, sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+        }
+        .app-container {
+            width: 360px;
+            border: 2px solid var(--jiro-yellow);
+            background: var(--bg-dark);
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(255, 241, 0, 0.2);
+        }
+        .lang-switcher {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+        .lang-btn {
+            flex: 1;
+            padding: 8px;
+            font-size: 12px;
+            background: #333;
+            color: #ccc;
+            border: 1px solid #555;
+            cursor: pointer;
+        }
+        .lang-btn.active {
+            background: var(--jiro-yellow);
+            color: #000;
+            font-weight: bold;
+        }
+        h1 { font-size: 1rem; color: var(--jiro-yellow); text-align: center; margin: 0 0 15px; }
+        .input-row { margin-bottom: 12px; }
+        label { display: block; font-size: 0.75rem; color: var(--jiro-yellow); margin-bottom: 4px; font-weight: bold; }
+        .sub-label { font-size: 0.6rem; color: #888; margin-bottom: 4px; }
+        select {
+            width: 100%;
+            padding: 10px;
+            background: #000;
+            color: #fff;
+            border: 1px solid var(--jiro-yellow);
+            border-radius: 0;
+            cursor: pointer;
+        }
+        .display-panel {
+            margin-top: 20px;
+            background: #000;
+            border: 1px solid var(--accent-blue);
+            padding: 15px;
+            text-align: center;
+        }
+        #call-output { font-size: 1.4rem; font-weight: bold; min-height: 1.6rem; line-height: 1.2; }
+        .system-msg { font-size: 0.65rem; color: #666; margin-top: 10px; font-family: monospace; }
+        button#exec-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            background: var(--jiro-yellow);
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button#exec-btn:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLang('ja', this)">JP</button>
+        <button class="lang-btn" onclick="setLang('en', this)">EN</button>
+        <button class="lang-btn" onclick="setLang('zh', this)">ZH</button>
+    </div>
+
+    <h1 id="ui-title">JIRO CALL OPTIMIZER</h1>
+
+    <div class="input-row">
+        <label id="lbl-g">ニンニク / Garlic</label>
+        <div id="sub-g" class="sub-label">Choose garlic amount</div>
+        <select id="garlic">
+            <option value="なし" data-en="None" data-zh="不加">なし / None</option>
+            <option value="ニンニク" data-en="NINNIKU" data-zh="DÀSUÀN">あり / Add</option>
+            <option value="ニンニクマシマシ" data-en="NINNIKU MASHI-MASHI" data-zh="DÀSUÀN DUŌ">マシマシ / Extra</option>
+        </select>
+    </div>
+
+    <div class="input-row">
+        <label id="lbl-v">ヤサイ / Vegetable</label>
+        <div id="sub-v" class="sub-label">Cabbage & Bean sprouts</div>
+        <select id="vegetable">
+            <option value=" " data-en=" " data-zh=" ">普通 / Normal</option>
+            <option value="ヤサイ" data-en="YASAI" data-zh="SHŪCÀI">増し / Extra</option>
+            <option value="ヤサイマシマシ" data-en="YASAI MASHI-MASHI" data-zh="SHŪCÀI DUŌ">マシマシ / Double Extra</option>
+            <option value="ヤサイ少なめ" data-en="YASAI SUKUNAME" data-zh="SHŪCÀI SHǍO">少なめ / Less</option>
+        </select>
+    </div>
+
+    <div class="input-row">
+        <label id="lbl-f">アブラ / Pork Fat</label>
+        <div id="sub-f" class="sub-label">Back fat chunks</div>
+        <select id="fat">
+            <option value=" " data-en=" " data-zh=" ">普通 / Normal</option>
+            <option value="アブラ" data-en="ABURA" data-zh="ZHŪYÓU">増し / Extra</option>
+            <option value="アブラマシマシ" data-en="ABURA MASHI-MASHI" data-zh="ZHŪYÓU DUŌ">マシマシ / Double Extra</option>
+            <option value="アブラ抜き" data-en="ABURA NUKI" data-zh="BÙJIĀ ZHŪYÓU">抜き / None</option>
+        </select>
+    </div>
+
+    <div class="input-row">
+        <label id="lbl-s">カラメ / Salty</label>
+        <div id="sub-s" class="sub-label">Concentration of soup</div>
+        <select id="salty">
+            <option value=" " data-en=" " data-zh=" ">普通 / Normal</option>
+            <option value="カラメ" data-en="KARAME" data-zh="XIÁN">濃いめ / Salty</option>
+        </select>
+    </div>
+
+    <button id="exec-btn" onclick="generate()">GENERATE COMMAND</button>
+
+    <div class="display-panel">
+        <div id="call-output">Waiting for Request...</div>
+        <div class="system-msg" id="sys-msg">> SYSTEM: Ready for transmission.</div>
+    </div>
+</div>
+
+<script>
+const langData = {
+    ja: { title: "二郎コール最適化ツール", btn: "コマンド生成", g: "ニンニク", v: "ヤサイ", f: "アブラ", s: "カラメ", sg: "ニンニクの量を選択", sv: "もやし・キャベツの量", sf: "背脂の塊", ss: "醤油ダレ（味の濃さ）" },
+    en: { title: "JIRO CALL OPTIMIZER", btn: "GENERATE COMMAND", g: "Garlic", v: "Vegetables", f: "Pork Fat", s: "Salty", sg: "Choose garlic amount", sv: "Cabbage & Bean sprouts", sf: "Back fat chunks", ss: "Extra soy sauce" },
+    zh: { title: "二郎拉面点餐系统", btn: "生成指令", g: "大蒜", v: "蔬菜", f: "猪油", s: "咸度", sg: "选择大蒜的分量", sv: "卷心菜和豆芽", sf: "猪背脂", ss: "汤的咸度" }
+};
+
+function setLang(lang, btn) {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    document.getElementById('ui-title').innerText = langData[lang].title;
+    document.getElementById('exec-btn').innerText = langData[lang].btn;
+    document.getElementById('lbl-g').innerText = langData[lang].g;
+    document.getElementById('lbl-v').innerText = langData[lang].v;
+    document.getElementById('lbl-f').innerText = langData[lang].f;
+    document.getElementById('lbl-s').innerText = langData[lang].s;
+    document.getElementById('sub-g').innerText = langData[lang].sg;
+    document.getElementById('sub-v').innerText = langData[lang].sv;
+    document.getElementById('sub-f').innerText = langData[lang].sf;
+    document.getElementById('sub-s').innerText = langData[lang].ss;
+}
+
 function generate() {
-    const lang = document.querySelector('.lang-btn.active').innerText; // 現在の選択言語を取得
+    const langBtn = document.querySelector('.lang-btn.active');
+    const lang = langBtn ? langBtn.innerText : 'JP';
     const g = document.getElementById('garlic');
     const v = document.getElementById('vegetable');
     const f = document.getElementById('fat');
     const s = document.getElementById('salty');
     
-    // 選択された言語に応じたデータ属性から値を取得
     const getVal = (el) => {
         const opt = el.options[el.selectedIndex];
         if (lang === 'EN') return opt.getAttribute('data-en') || opt.value;
@@ -16,32 +182,39 @@ function generate() {
     const gVal = getVal(g);
     const vVal = getVal(v);
     const fVal = getVal(f);
-    const sVal = (lang === 'JA') ? s.value : (s.value.trim() ? "Salty" : ""); // カラメの多言語対応
+    const sVal = getVal(s);
 
     // 全マシ判定
-    const isAll = (g.value.includes("ニンニク") && v.value.includes("ヤサイ") && f.value.includes("アブラ") && s.value.includes("カラメ"));
+    const isAll = (g.value === "ニンニク" && v.value === "ヤサイ" && f.value === "アブラ" && s.value === "カラメ");
+    const isAllDouble = (g.value === "ニンニクマシマシ" && v.value === "ヤサイマシマシ" && f.value === "アブラマシマシ" && s.value === "カラメ");
     
     let res = "";
-    let sub = ""; // 日本語の読み/補足用
+    let sub = "";
 
-    if (isAll) {
-        if (lang === 'EN') { res = "ZEN-MASHI"; sub = "All Toppings"; }
-        else if (lang === 'ZH') { res = "全加 (Quán jiā)"; sub = "全部トッピング"; }
+    if (isAllDouble) {
+        if (lang === 'EN') { res = "ZEN-MASHI-MASHI"; sub = "Double Extra All"; }
+        else if (lang === 'ZH') { res = "全特多 (Quán tè duō)"; sub = "全部特多"; }
+        else { res = "全マシマシ"; sub = "ZEN-MASHI-MASHI"; }
+    } else if (isAll) {
+        if (lang === 'EN') { res = "ZEN-MASHI"; sub = "Extra All"; }
+        else if (lang === 'ZH') { res = "全加 (Quán jiā)"; sub = "全部加"; }
         else { res = "全マシ"; sub = "ZEN-MASHI"; }
     } else {
         res = [gVal, vVal, fVal, sVal].filter(x => x && x.trim() !== "").join(" ");
     }
 
-    if (!res || res.includes("なし") || res.includes("None")) {
+    if (!res || res.includes("なし") || res.includes("None") || res.includes("不加")) {
         res = (lang === 'EN') ? "SONO-MAMA" : (lang === 'ZH' ? "就这样 (Jiù zhèyàng)" : "そのままで");
         sub = "Default / No extra";
     }
 
-    // 表示の更新
     document.getElementById('call-output').innerHTML = 
-        `<div style="font-size: 0.8rem; color: #888;">Voice Call:</div>` +
+        `<div style="font-size: 0.8rem; color: #888; margin-bottom:5px;">Voice Call:</div>` +
         `<div style="color: var(--jiro-yellow);">${res}！</div>` +
-        `<div style="font-size: 0.9rem; color: #ccc; margin-top:5px;">${sub}</div>`;
+        `<div style="font-size: 0.9rem; color: #ccc; margin-top:8px;">${sub}</div>`;
     
-    document.getElementById('sys-msg').innerText = `> STATUS: 200 OK (${lang} Mode)`;
+    document.getElementById('sys-msg').innerText = `> STATUS: 200 OK (${lang} Mode Active)`;
 }
+</script>
+</body>
+</html>
