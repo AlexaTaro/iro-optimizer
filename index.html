@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jiro Call Optimizer v1.0</title>
+    <style>
+        :root {
+            --jiro-yellow: #fff100;
+            --danger-red: #d32f2f;
+            --bg-dark: #212121;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 90%;
+            max-width: 400px;
+            border: 2px solid var(--jiro-yellow);
+            padding: 20px;
+            box-sizing: border-box;
+            background: #000;
+        }
+        h1 {
+            font-size: 1.2rem;
+            color: var(--jiro-yellow);
+            text-align: center;
+            margin-top: 0;
+            border-bottom: 1px solid var(--jiro-yellow);
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            color: #bbb;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            appearance: none;
+        }
+        .output-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: #111;
+            border: 1px dashed var(--jiro-yellow);
+            min-height: 50px;
+            text-align: center;
+        }
+        #final-call {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--jiro-yellow);
+            word-break: break-all;
+        }
+        .error-msg {
+            color: var(--danger-red);
+            font-size: 0.7rem;
+            margin-top: 5px;
+            display: none;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            background: var(--jiro-yellow);
+            color: #000;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>CALL GENERATOR</h1>
+    
+    <div class="form-group">
+        <label>ニンニク (Garlic)</label>
+        <select id="garlic">
+            <option value="">-- 選択必須 --</option>
+            <option value="なし">なし</option>
+            <option value="ニンニク">あり</option>
+            <option value="ニンニクマシマシ">マシマシ</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>ヤサイ (Vegetable)</label>
+        <select id="vegetable">
+            <option value=" ">普通</option>
+            <option value="ヤサイ">増し</option>
+            <option value="ヤサイマシマシ">マシマシ</option>
+            <option value="ヤサイ少なめ">少なめ</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>アブラ (Fat)</label>
+        <select id="fat">
+            <option value=" ">普通</option>
+            <option value="アブラ">増し</option>
+            <option value="アブラマシマシ">マシマシ</option>
+            <option value="アブラ抜き">抜き</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>カラメ (Salty)</label>
+        <select id="salty">
+            <option value=" ">普通</option>
+            <option value="カラメ">カラメ（濃いめ）</option>
+        </select>
+    </div>
+
+    <button onclick="generateCall()">GENERATE COMMAND</button>
+
+    <div class="output-area">
+        <div id="final-call">Waiting for input...</div>
+        <div id="error" class="error-msg">エラー：「はい」は無効な引数です。</div>
+    </div>
+</div>
+
+<script>
+function generateCall() {
+    const g = document.getElementById('garlic').value;
+    const v = document.getElementById('vegetable').value;
+    const f = document.getElementById('fat').value;
+    const s = document.getElementById('salty').value;
+    const error = document.getElementById('error');
+    const output = document.getElementById('final-call');
+
+    if (g === "") {
+        error.style.display = 'block';
+        output.innerText = "ERROR";
+        return;
+    }
+
+    error.style.display = 'none';
+    let result = [g, v, f, s].filter(x => x.trim() !== "").join("");
+    
+    if (result === "なし") result = "そのままで";
+    
+    output.innerText = result + "！";
+}
+</script>
+
+</body>
+</html>
