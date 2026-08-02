@@ -1,171 +1,61 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jiro Voice Optimizer v6.0 - Monetized</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta property="og:title" content="Jiro Global Speaker - 二郎コール生成器">
-    <meta property="og:description" content="外国人でも二郎でコールを成功させるための、発音特化型デバッグツール。">
-    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Ramen_Jiro_Mita_Main_Store.jpg/640px-Ramen_Jiro_Mita_Main_Store.jpg">
-    <meta name="twitter:card" content="summary_large_image">
+<!-- This tool has moved to lrappli.com. GitHub Pages is static and cannot send
+     a real 301, so this is the strongest signal available: canonical tells
+     search engines which URL is the original, meta refresh moves visitors who
+     have JS disabled, and location.replace keeps the old URL out of the back
+     button for everyone else. -->
+<link rel="canonical" href="https://lrappli.com/ramen-call.html">
+<meta http-equiv="refresh" content="0; url=https://lrappli.com/ramen-call.html">
+<meta name="robots" content="noindex, follow">
 
-    <style>
-        :root { --jiro-yellow: #fff100; --bg: #000; --accent: #ff0000; }
-        body { font-family: 'Arial Black', 'Helvetica Neue', sans-serif; background: var(--bg); color: #fff; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .app { width: 100%; max-width: 400px; border: 4px solid var(--jiro-yellow); background: #111; padding: 15px; box-sizing: border-box; position: relative; }
-        
-        .lang-nav { display: flex; gap: 4px; margin-bottom: 15px; }
-        .lang-nav button { flex: 1; padding: 12px; background: #333; color: #fff; border: 1px solid #555; cursor: pointer; font-size: 14px; font-weight: bold; }
-        .lang-nav button.active { background: var(--jiro-yellow); color: #000; border-color: var(--jiro-yellow); }
-
-        .instruction { font-size: 0.85rem; color: var(--jiro-yellow); text-align: center; margin-bottom: 15px; min-height: 2.5em; line-height: 1.3; }
-        
-        .row { margin-bottom: 12px; }
-        label { display: block; font-size: 0.75rem; color: #aaa; margin-bottom: 4px; }
-        select { width: 100%; padding: 12px; background: #222; color: #fff; border: 1px solid var(--jiro-yellow); font-size: 1rem; border-radius: 0; }
-
-        #exec { width: 100%; padding: 20px; background: var(--jiro-yellow); border: none; font-weight: 900; font-size: 1.3rem; margin: 15px 0; cursor: pointer; }
-        
-        /* アウトプットエリア */
-        .output { background: #000; border: 3px solid var(--accent); padding: 25px 10px; text-align: center; position: relative; }
-        .output::before { content: "VOICE OUTPUT"; position: absolute; top: -10px; left: 10px; background: var(--accent); color: #fff; font-size: 0.6rem; padding: 2px 5px; }
-        
-        .main-call { font-size: 2.8rem; font-weight: 900; color: var(--jiro-yellow); line-height: 1.1; margin-bottom: 10px; }
-        .reading-call { font-size: 1.5rem; color: #fff; letter-spacing: 1px; border-top: 1px solid #333; padding-top: 10px; }
-        .meaning { font-size: 0.8rem; color: #666; margin-top: 15px; font-style: italic; }
-
-        /* 投げ銭セクション */
-        .donation-area { margin-top: 30px; text-align: center; border-top: 1px dashed #444; padding-top: 20px; }
-        .donation-text { font-size: 0.7rem; color: #888; margin-bottom: 12px; }
-        .donate-btn { display: inline-flex; align-items: center; background-color: #FFDD00; color: #000; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.9rem; transition: transform 0.2s; }
-        .donate-btn:active { transform: scale(0.95); }
-    </style>
+<title>移転しました — ラーメンコールメーカー</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    background: #fafafa;
+    color: #222;
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 24px;
+    box-sizing: border-box;
+    line-height: 1.7;
+  }
+  .box { max-width: 460px; text-align: center; }
+  h1 { font-size: 20px; margin: 0 0 12px; }
+  p { color: #555; font-size: 15px; margin: 0 0 24px; }
+  .en { font-size: 13px; color: #888; }
+  a.go {
+    display: inline-block;
+    padding: 12px 26px;
+    border-radius: 999px;
+    background: #ed8b00;
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+  }
+</style>
 </head>
 <body>
-
-<div class="app">
-    <div class="lang-nav">
-        <button id="btn-ja" class="active" onclick="setL('ja',this)">JP</button>
-        <button id="btn-en" onclick="setL('en',this)">EN</button>
-        <button id="btn-zh" onclick="setL('zh',this)">ZH</button>
-    </div>
-
-    <div id="inst" class="instruction">店員に「ニンニク入れますか？」と聞かれたら、下の黄色い文字を叫んでください。</div>
-
-    <div class="row">
-        <label id="lg">ニンニク / Garlic</label>
-        <select id="g">
-            <option value="" data-y="" data-m="None">なし / None</option>
-            <option value="ニンニク" data-y="NINNIKU" data-m="Add Garlic">あり / Add</option>
-            <option value="ニンニクマシマシ" data-y="NINNIKU MASHI-MASHI" data-m="Extra Garlic">マシマシ / Double Extra</option>
-        </select>
-    </div>
-
-    <div class="row">
-        <label id="lv">ヤサイ / Vegetable</label>
-        <select id="v">
-            <option value=" " data-y=" " data-m="Normal">普通 / Normal</option>
-            <option value="ヤサイ" data-y="YASAI" data-m="Extra Veggie">増し / Extra</option>
-            <option value="ヤサイマシマシ" data-y="YASAI MASHI-MASHI" data-m="Double Extra Veggie">マシマシ / Double Extra</option>
-            <option value="ヤサイ少なめ" data-y="YASAI SUKUNAME" data-m="Less Veggie">少なめ / Less</option>
-        </select>
-    </div>
-
-    <div class="row">
-        <label id="lf">アブラ / Fat</label>
-        <select id="f">
-            <option value=" " data-y=" " data-m="Normal">普通 / Normal</option>
-            <option value="アブラ" data-y="ABURA" data-m="Extra Fat">増し / Extra</option>
-            <option value="アブラ抜き" data-y="ABURA NUKI" data-m="No Fat">抜き / None</option>
-        </select>
-    </div>
-
-    <div class="row">
-        <label id="ls">カラメ / Salty</label>
-        <select id="s">
-            <option value=" " data-y=" " data-m="Normal">普通 / Normal</option>
-            <option value="カラメ" data-y="KARAME" data-m="More Salty">あり / Salty</option>
-        </select>
-    </div>
-
-    <button id="exec" onclick="gen()">GENERATE CALL</button>
-
-    <div class="output">
-        <div id="out1" class="main-call">-</div>
-        <div id="out2" class="reading-call">-</div>
-        <div id="out-m" class="meaning">Selected: None</div>
-    </div>
-
-    <div class="donation-area">
-        <div id="don-t" class="donation-text">If this tool helped you, support the creator!</div>
-        <a href="https://buymeacoffee.com/alexataro" target="_blank" class="donate-btn">
-            🍜 <span id="don-b">Buy me a Ramen</span>
-        </a>
-    </div>
-</div>
-
-<script>
-let cur = 'ja';
-const d = {
-    ja: { inst: "店員に「ニンニク入れますか？」と聞かれたら、下の黄色い文字を叫んでください。", b: "コールを生成", g: "ニンニク", v: "ヤサイ", f: "アブラ", s: "カラメ", dt: "ツールがお役に立ったら、開発者を応援してください！", db: "ラーメンを奢る" },
-    en: { inst: "When the staff asks 'Ninniku iremasuka?', SHOUT the yellow text below!", b: "GENERATE COMMAND", g: "Garlic", v: "Vegetable", f: "Pork Fat", s: "Salty", dt: "If this tool helped you, support the creator!", db: "Buy me a Ramen" },
-    zh: { inst: "当主人问 “Ninniku iremasuka?” 时、请大声朗读下方的黄色文字！", b: "生成指令", g: "大蒜", v: "蔬菜", f: "猪油", s: "咸度", dt: "如果这个工具对你有帮助、请支持作者！", db: "請作者吃拉面" }
-};
-
-function setL(l, b) {
-    cur = l;
-    document.querySelectorAll('.lang-nav button').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-    document.getElementById('inst').innerText = d[l].inst;
-    document.getElementById('exec').innerText = d[l].b;
-    document.getElementById('lg').innerText = d[l].g;
-    document.getElementById('lv').innerText = d[l].v;
-    document.getElementById('lf').innerText = d[l].f;
-    document.getElementById('ls').innerText = d[l].s;
-    document.getElementById('don-t').innerText = d[l].dt;
-    document.getElementById('don-b').innerText = d[l].db;
-}
-
-function gen() {
-    const gE = document.getElementById('g');
-    const vE = document.getElementById('v');
-    const fE = document.getElementById('f');
-    const sE = document.getElementById('s');
-    
-    const isMashi = (gE.value==="ニンニク" && vE.value==="ヤサイ" && fE.value==="アブラ" && sE.value==="カラメ");
-    
-    let res = "";
-    let yomi = "";
-    let mean = "";
-
-    if (isMashi) {
-        res = "全マシ！";
-        yomi = "ZEN-MASHI!";
-        mean = (cur==='zh') ? "全部添加" : "All Toppings";
-    } else {
-        res = [gE.value, vE.value, fE.value, sE.value].filter(x=>x.trim()).join(" ") + "！";
-        yomi = [gE.options[gE.selectedIndex].getAttribute('data-y'), 
-                vE.options[vE.selectedIndex].getAttribute('data-y'), 
-                fE.options[fE.selectedIndex].getAttribute('data-y'),
-                sE.options[sE.selectedIndex].getAttribute('data-y')].filter(x=>x.trim()).join(" ");
-        mean = [gE.options[gE.selectedIndex].getAttribute('data-m'), 
-                vE.options[vE.selectedIndex].getAttribute('data-m'), 
-                fE.options[fE.selectedIndex].getAttribute('data-m'),
-                sE.options[sE.selectedIndex].getAttribute('data-m')].filter(x=>x!=="Normal" && x!=="None").join(", ");
-    }
-
-    if (!res || res === "！") {
-        res = "そのままで！";
-        yomi = "SONO-MAMA-DE!";
-        mean = "Default";
-    }
-
-    document.getElementById('out1').innerText = res;
-    document.getElementById('out2').innerText = yomi;
-    document.getElementById('out-m').innerText = "Selected: " + (mean || "Normal");
-}
-</script>
+  <div class="box">
+    <h1>ページを移転しました</h1>
+    <p>
+      ラーメンコールメーカーは lrappli.com に移りました。<br>
+      自動で移動します。切り替わらない場合は下のボタンからどうぞ。
+    </p>
+    <p><a class="go" href="https://lrappli.com/ramen-call.html">新しいページへ</a></p>
+    <p class="en">This tool has moved to <a href="https://lrappli.com/ramen-call.html">lrappli.com/ramen-call.html</a>.</p>
+  </div>
+  <script>
+    // replace() rather than href: the old URL should not sit in history and
+    // bounce anyone who presses Back.
+    location.replace('https://lrappli.com/ramen-call.html');
+  </script>
 </body>
 </html>
-
